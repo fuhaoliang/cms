@@ -1,6 +1,6 @@
 module.exports = {
   env: 'alpha',
-  v: 1551847222969, //版本號
+  v: 1552876640115, //版本號
   // 用户环境
   user: 'user_alpha',
   baseApi: 'https://alpha-passport.homestyler.com',

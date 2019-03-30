@@ -32,10 +32,33 @@ export const constantRouterMap = [
     redirect: '/dashboard',
     name: 'Dashboard',
     hidden: true,
-    children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
-    }]
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index')
+      }
+    ]
+  },
+  {
+    path: '/article',
+    component: Layout,
+    redirect: '/article/all-article',
+    name: 'article',
+    meta: { title: '文章', icon: 'example' },
+    children: [
+      {
+        path: 'all-article',
+        name: 'AllArticle',
+        component: () => import('@/views/article/allArticle'),
+        meta: { title: '全部文章', icon: 'table' }
+      },
+      {
+        path: 'write-article',
+        name: 'WriteArticle',
+        component: () => import('@/views/article/writeArticle'),
+        meta: { title: '写文章', icon: 'table' }
+      }
+    ]
   },
 
   {

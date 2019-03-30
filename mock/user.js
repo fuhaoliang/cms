@@ -28,16 +28,21 @@ export default {
   login: res => {
     const { username } = JSON.parse(res.body)
     const data = tokens[username]
-
     if (data) {
       return {
-        code: 20000,
+        status: {
+          code: 0,
+          message: 'ok'
+        },
         data
       }
     }
     return {
-      code: 60204,
-      message: 'Account and password are incorrect.'
+      status: {
+        code: -1,
+        message: 'Account and password are incorrect.'
+      },
+      data: null
     }
   },
   getInfo: res => {
@@ -57,8 +62,11 @@ export default {
   },
   logout: () => {
     return {
-      code: 20000,
-      data: 'success'
+      status: {
+        code: 0,
+        message: 'ok'
+      },
+      data: null
     }
   }
 }
