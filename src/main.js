@@ -24,7 +24,7 @@ import '@/permission' // permission control
  * If you remove `../mock` it will automatically request easy-mock data.
  */
 if (process.env.NODE_ENV === 'development') {
-  require('../mock')
+  // require('../mock')
 }
 // import '../mock' // simulation data
 

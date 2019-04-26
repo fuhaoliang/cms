@@ -2,8 +2,7 @@
   <div class="tinymce-editor">
     <editor v-model="myValue"
             :init="init"
-            :disabled="disabled"
-            @onClick="onClick" />
+            :disabled="disabled"/>
   </div>
 </template>
 
@@ -12,6 +11,7 @@ import tinymce from 'tinymce/tinymce'
 import Editor from '@tinymce/tinymce-vue'
 import 'tinymce/themes/modern/theme'
 import 'tinymce/plugins/image'
+import 'tinymce/plugins/imagetools'
 import 'tinymce/plugins/media'
 import 'tinymce/plugins/table'
 import 'tinymce/plugins/lists'
@@ -19,6 +19,9 @@ import 'tinymce/plugins/contextmenu'
 import 'tinymce/plugins/wordcount'
 import 'tinymce/plugins/colorpicker'
 import 'tinymce/plugins/textcolor'
+import utils from '@/utils/utils'
+import Http from '@/utils/http'
+
 export default {
   components: {
     Editor
@@ -35,7 +38,7 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image media table textcolor wordcount contextmenu'
+      default: 'lists image imagetools media table textcolor wordcount contextmenu'
     },
     toolbar: {
       type: [String, Array],
@@ -49,21 +52,34 @@ export default {
         language_url: '../../static/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
         skin_url: '../../static/tinymce/skins/lightgray',
-        height: 300,
+        height: 420,
         plugins: this.plugins,
         toolbar: this.toolbar,
         branding: false,
         menubar: false,
+        // automatic_uploads: true,
+        // images_upload_url: 'http://127.0.0.1:3000/api/v1/upload',
         automatic_uploads: false,
+        image_title: true,
+        image_advtab: true,
         images_reuse_filename: true,
+        imagetools_toolbar: 'rotateleft rotateright | flipv fliph | editimage imageoptions',
         // 此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
         // 如需ajax上传可参考https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
-        images_upload_handler: (blobInfo, success, failure) => {
-          console.info('blobInfo', blobInfo.filename())
+        images_upload_handler: async (blobInfo, success, failure) => {
           // if (blobInfo.filename().indexOf('blobid') > -1) return
-          const img = 'data:image/jpeg;base64,' + blobInfo.base64()
-          console.info('!!!我去上传图片了！！！')
-          success(img)
+          const imgBase64 = 'data:image/jpeg;base64,' + blobInfo.base64()
+          // success(imgBase64)
+          const imgName = blobInfo.name()
+          const fileData = utils.dataURLtoFile(imgBase64, imgName)
+          const fd = new FormData()
+          fd.append('file', fileData)
+          const { status, data } = await Http.userApi.uploadImage(fd)
+          if (status.code === 0) {
+            success(data.file)
+          } if (status.code === -1) {
+            failure(status.message)
+          }
         }
       },
       myValue: this.value

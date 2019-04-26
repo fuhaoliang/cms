@@ -1,4 +1,0 @@
-object 1: 本身的方法 2.object实例方法
-判断是否说对象 value === Object(value)
-
-Object.keys() /  Object.getOwnPropertyNames方法还返回不可枚举的属性名

@@ -41,8 +41,8 @@
         </el-button>
       </el-form-item>
       <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: admin</span>
+        <span style="margin-right:20px;">username: admin123</span>
+        <span> password: admin123</span>
       </div>
     </el-form>
   </div>
@@ -50,7 +50,7 @@
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
-
+import { Message } from 'element-ui'
 export default {
   name: 'Login',
   data () {
@@ -107,16 +107,13 @@ export default {
           const { status } = await this.$store.dispatch('Login', {
             params: {
               ...this.loginForm
-            },
-            options: {
-              mock: true
             }
           })
           this.loading = false
           if (status.code === 0) {
             this.$router.push({ path: this.redirect || '/' })
-          } else {
-            console.info('error', status.message)
+          } else if (status.code === -1) {
+            Message.error(status.message)
           }
         } else {
           console.log('error submit!!')

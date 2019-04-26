@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import '@/assets/fonts/iconfont'
 import SvgIcon from '@/components/SvgIcon' // svg组件
 
 // register globally

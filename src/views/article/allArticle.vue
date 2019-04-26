@@ -72,7 +72,7 @@
           sortable />
         <el-table-column
           prop="address"
-          label="地址"
+          label="标签"
           show-overflow-tooltip />
         <el-table-column
           fixed="right"

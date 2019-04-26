@@ -24,11 +24,11 @@ const tipMsg = {
   '401': '请重新登录',
   '403': '未授权'
 }
-
+// 请求拦截
 jrAxios.interceptors.request.use(
   config => {
     if (store.getters.token) {
-      config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     return config
   },
@@ -60,7 +60,7 @@ for (const i in services) {
       continue
     }
     const api = service[ind]
-    Http[i][ind] = async function (params, options = {}, headers = {}, isNeedStatus = false, withCredentials = true) {
+    Http[i][ind] = async function (params, options = {}, headers = {}, isNeedStatus = false, withCredentials = false) {
       let apiUrl = api.url
       const newParams = {}
       options = Object.assign({ loading: false, show: false, error: true, mock: false, proxy: false }, options)
@@ -74,7 +74,7 @@ for (const i in services) {
         })
       }
       let data = newParams
-      if (Array.isArray(params)) {
+      if (Array.isArray(params) || params instanceof FormData) {
         data = params
       }
       const config = {
@@ -93,6 +93,7 @@ for (const i in services) {
         store.state.loadingShow = true
       }
       const host = ((api.mock || options.mock) && process.env.NODE_ENV === 'development') || options.proxy ? '' : serviceHost
+      console.info('host----->', host)
       let response = {}
       if (api.method === 'put' || api.method === 'post' || api.method === 'patch') {
         response = await jrAxios[api.method](host + apiUrl, data, config)
@@ -106,6 +107,8 @@ for (const i in services) {
           message: 'Error: Network Error'
         }
       }
+      console.info('response', response)
+      console.info('response.response', response.response)
       if (response.response) {
         errorObj.status.code = response.response.status
         errorObj.status.message = response.response.status + ' ' + (response.response.statusText ? response.response.statusText : tipMsg[response.response.status])
@@ -118,7 +121,7 @@ for (const i in services) {
         response = response.response
       }
       if (response.status === 200 || response.status === 201) {
-        console.info('sucess')
+        console.info('sucess---http')
       } else {
         response.data = errorObj
         if (options.error) {
@@ -134,6 +137,7 @@ for (const i in services) {
       if (options.show) {
         store.state.loadingShow = false
       }
+      console.info('response', response)
       return response
     }
   }

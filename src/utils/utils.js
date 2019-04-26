@@ -110,88 +110,6 @@ export default {
     }
     return obj
   },
-  returnRoleName (groupName) {
-    if (groupName) {
-      switch (groupName) {
-        case 'vEnterpriseSystemAdminGroup':
-          return ''
-        case 'vEnterpriseAdminGroup':
-          return 'enterpriseAdmin'
-        case 'vEnterpriseOperatorGroup':
-          return 'enterpriseOperator'
-        case 'vEnterpriseManufacturerGroup':
-          return 'enterpriseBrandOwner'
-        case 'vEnterpriseDealerGroup':
-          return 'enterpriseDealer'
-        case 'vEnterpriseDecoratorGroup':
-          return 'enterpriseDecorator'
-        case 'vEnterpriseDesingerGroup':
-          return 'enterpriseDesigner'
-        case 'vEnterpriseGuideGroup':
-          return 'enterpriseSalesclerk'
-        default:
-          return ''
-      }
-    } else {
-      return ''
-    }
-  },
-  accountListMap: {
-    map: {
-      displayName: ['账号名称', '账号', '角色', '创建日期', '账号类型', '分组', '手机号', '经销商数', '设计师/导购数', '创建人', '更新日期', '更新人', '商铺', '姓名'],
-      displayCode: [
-        'userName',
-        'umsUserName',
-        'roleNames',
-        'createTime',
-        'source',
-        'groupName',
-        'mobileNumber',
-        'traderNum',
-        'designerNum',
-        'createUser',
-        'updateTime',
-        'updateUser',
-        'shopNames',
-        'designerName'
-      ]
-    },
-    showFields: {
-      vEnterpriseAdminGroup: [0, 1, 6, 3, 4, 5],
-      vEnterpriseOperatorGroup: [0, 1, 6, 3, 4, 5],
-      vEnterpriseManufacturerGroup: [0, 1, 6, 4, 5, 7, 8, 3, 9, 10, 11],
-      vEnterpriseDealerGroup: [0, 1, 6, 4, 5, 8, 3, 9, 10, 11],
-      vEnterpriseDecoratorGroup: [0, 1, 6, 4, 5, 8, 3, 9, 10, 11],
-      vEnterpriseDesingerGroup: [0, 1, 13, 6, 3, 9, 5, 12],
-      vEnterpriseGuideGroup: [0, 1, 13, 6, 3, 9, 5, 12]
-    }
-  },
-  returnGroupName (value) {
-    if (value) {
-      switch (value) {
-        case 'vEnterpriseSystemAdminGroup':
-          return '系统管理员'
-        case 'vEnterpriseAdminGroup':
-          return '管理员'
-        case 'vEnterpriseOperatorGroup':
-          return '运营'
-        case 'vEnterpriseManufacturerGroup':
-          return '品牌商'
-        case 'vEnterpriseDealerGroup':
-          return '经销商'
-        case 'vEnterpriseDecoratorGroup':
-          return '装饰公司'
-        case 'vEnterpriseDesingerGroup':
-          return '设计师'
-        case 'vEnterpriseGuideGroup':
-          return '导购'
-        default:
-          return ''
-      }
-    } else {
-      return ''
-    }
-  },
   date2String (date) {
     const year = date.getFullYear()
     const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
@@ -270,45 +188,6 @@ export default {
       return ''
     }
   },
-  formatterLevel: function (value) {
-    if (value) {
-      switch (value) {
-        case 'newbie':
-          return '新手'
-        case 'expert':
-          return '达人'
-        case 'profession':
-          return '专业'
-        case 'senior':
-          return '资深'
-        case 'medal':
-          return '金牌'
-        default:
-          return ''
-      }
-    } else {
-      return ''
-    }
-  },
-  // 角色判断返回
-  formatterRoles (roleString) {
-    if (roleString) {
-      switch (roleString) {
-        case 'MANUFACTURERS':
-          return '厂商'
-        case 'MERCHANTS':
-          return '经销商'
-        case 'BRANDFACTURES':
-          return '品牌商'
-        case 'DERACTORS':
-          return '装饰公司'
-        case 'STORES':
-          return '门店'
-      }
-    } else {
-      return ''
-    }
-  },
   setCookie (name, value, days) {
     // console.log('name:' + name + ' value:' + value)
     const Days = days || 1
@@ -343,16 +222,6 @@ export default {
       if (location.host.indexOf('homestyler.com') > -1) {
         document.cookie = name + ' = ' + encodeURIComponent(cval) + ';expires=' + exp.toGMTString() + ';path=/;domain=.homestyler.com'
       }
-    }
-  },
-  isLogin () {
-    const SJJTOKEN = 'has_login'
-    const val = this.getCookie(SJJTOKEN)
-    console.log('has_login:' + val)
-    if (val) {
-      return true
-    } else {
-      return false
     }
   },
   // 验证手机号
@@ -414,10 +283,21 @@ export default {
     }
   },
   createAuthoriationHeader (accessToken) {
-    const authorization = 'Bearer ' + accessToken
+    const Authorization = 'Bearer ' + accessToken
     const header = {
-      authorization: authorization
+      Authorization: Authorization
     }
     return header
+  },
+  dataURLtoFile (dataurl, filename) { // 将base64转换为文件
+    const arr = dataurl.split(',')
+    const mime = arr[0].match(/:(.*?);/)[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+    return new File([u8arr], filename, { type: mime })
   }
 }

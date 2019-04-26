@@ -1,4 +1,4 @@
-import { logout, getInfo } from '@/api/login'
+// import { logout } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import Http from '@/utils/http'
 const user = {
@@ -31,51 +31,46 @@ const user = {
       console.info('args', args)
       return new Promise(async (resolve, reject) => {
         const { params, options } = args
-        const { status, data } = await Http.gateway.login(params, options)
-        console.info('params---->', params)
+        const { status, data } = await Http.userApi.login(params, options)
         if (status.code === 0) {
           setToken(data.token)
           commit('SET_TOKEN', data.token)
         }
-        resolve({ status, data })
+        resolve({ status })
       })
     },
 
     // 获取用户信息
     GetInfo ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        getInfo(state.token)
-          .then(response => {
-            const data = response.data
-            if (data.roles && data.roles.length > 0) {
-              // 验证返回的roles是否是一个非空数组
-              commit('SET_ROLES', data.roles)
-            } else {
-              reject('getInfo: roles must be a non-null array !')
-            }
-            commit('SET_NAME', data.name)
-            commit('SET_AVATAR', data.avatar)
-            resolve(response)
-          })
-          .catch(error => {
-            reject(error)
-          })
+      return new Promise(async (resolve, reject) => {
+        const token = 'Bearer ' + state.token
+        console.info('token', token)
+        const { status, data } = await Http.userApi.getUserInfo({}, {}, { Authorization: token })
+        if (status.code === 0) {
+          const { userInfo } = data
+          if (userInfo.roles && userInfo.roles.length > 0) {
+            // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', userInfo.roles)
+          } else {
+            reject('getInfo: roles must be a non-null array !')
+          }
+          commit('SET_NAME', userInfo.username)
+          commit('SET_AVATAR', userInfo.avatar)
+        }
+        resolve({ status, data })
       })
     },
 
     // 登出
     LogOut ({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        logout(state.token)
-          .then(() => {
-            commit('SET_TOKEN', '')
-            commit('SET_ROLES', [])
-            removeToken()
-            resolve()
-          })
-          .catch(error => {
-            reject(error)
-          })
+      return new Promise(async (resolve, reject) => {
+        const { status, data } = await Http.userApi.logout({}, { error: false })
+        if (status.code !== -1) {
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          removeToken()
+        }
+        resolve({ status, data })
       })
     },
 

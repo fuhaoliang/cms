@@ -25,6 +25,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { Message } from 'element-ui'
 
 export default {
   components: {
@@ -41,10 +42,13 @@ export default {
     toggleSideBar () {
       this.$store.dispatch('ToggleSideBar')
     },
-    logout () {
-      this.$store.dispatch('LogOut').then(() => {
+    async logout () {
+      const { status } = await this.$store.dispatch('LogOut')
+      if (status.code !== -1) {
         location.reload() // 为了重新实例化vue-router对象 避免bug
-      })
+      } else {
+        Message.error(status.message)
+      }
     }
   }
 }

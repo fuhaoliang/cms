@@ -8,7 +8,7 @@ import { getToken } from '@/utils/auth' // getToken from cookie
 NProgress.configure({ showSpinner: false })// NProgress configuration
 
 const whiteList = ['/login'] // 不重定向白名单
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   if (getToken()) {
     if (to.path === '/login') {
@@ -16,14 +16,14 @@ router.beforeEach((to, from, next) => {
       NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
       if (store.getters.roles.length === 0) {
-        store.dispatch('GetInfo').then(res => { // 拉取用户信息
+        const { status } = await store.dispatch('GetInfo')
+        if (status.code === 0) {
           next()
-        }).catch((err) => {
-          store.dispatch('FedLogOut').then(() => {
-            Message.error(err || 'Verification failed, please login again')
-            next({ path: '/' })
-          })
-        })
+        } else {
+          if (status.code === -1) Message.error(status.message)
+          await store.dispatch('FedLogOut')
+          next({ path: '/' })
+        }
       } else {
         next()
       }
