@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    var obj1 = {a:1, b:2}
+    var obj2 = {b:3, d:4}
+    SELF_DATA_ARR = []
+    function copyData (dataArr = []) {
+      dataArr.forEach(item => {
+        const itmeSymbol = Symbol()
+        item['_symbol'] = itmeSymbol
+        const oldItem = JSON.parse(JSON.stringify(item))
+        this.SELF_DATA_ARR[itmeSymbol] = JSON.parse(JSON.stringify(oldItem))
+      })
+    }
+    function compareData (oldObj = {}) {
+      const changeArr = []
+      const SELF_DATA_ARR = this.SELF_DATA_ARR
+      for (const key in oldObj) {
+        if (key === '_symbol') continue
+        const oldData = JSON.parse(JSON.stringify(SELF_DATA_ARR[oldObj['_symbol']][key]))
+        const newData = JSON.parse(JSON.stringify(oldObj[key]))
+        if ( oldData !== newData ) {
+          if (typeof oldObj[key] === 'object') {
+          }
+          console.info(oldData, newData);
+          changeArr.push(key)
+        }
+      }
+      return changeArr
+    }
+    copyData([obj1])
+    obj1.a = 5
+    let a = compareData(obj1)
+    console.info('a', a)
+  </script>
+</body>
+</html>

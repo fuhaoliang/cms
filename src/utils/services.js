@@ -28,7 +28,11 @@ const articleApi = {
   },
   getAtricleInfo: {
     method: 'get',
-    url: '/atricle/{id}'
+    url: '/article/{id}'
+  },
+  patchAtricle: {
+    method: 'patch',
+    url: '/article/{id}'
   },
   getTags: {
     method: 'get',

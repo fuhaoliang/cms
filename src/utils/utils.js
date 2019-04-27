@@ -299,5 +299,28 @@ export default {
       u8arr[n] = bstr.charCodeAt(n)
     }
     return new File([u8arr], filename, { type: mime })
+  },
+  copyData (dataArr = []) {
+    this.SELF_DATA_ARR = this.SELF_DATA_ARR || []
+    dataArr.forEach(item => {
+      const itmeSymbol = Symbol()
+      console.info('itmeSymbol', itmeSymbol)
+      item['_symbol'] = itmeSymbol
+      const oldItem = JSON.parse(JSON.stringify(item))
+      this.SELF_DATA_ARR[itmeSymbol] = JSON.parse(JSON.stringify(oldItem))
+    })
+  },
+  compareData (oldObj = {}) {
+    const changeArr = []
+    const SELF_DATA_ARR = this.SELF_DATA_ARR
+    for (const key in oldObj) {
+      if (key === '_symbol') continue
+      const oldData = SELF_DATA_ARR[oldObj['_symbol']][key].toString()
+      const newData = oldObj[key].toString()
+      if (oldData !== newData) {
+        changeArr.push(key)
+      }
+    }
+    return changeArr
   }
 }

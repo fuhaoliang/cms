@@ -7,7 +7,7 @@
         </el-input>
       </div>
       <div class="writeArite-header-r">
-        <el-button type="primary" size="small" plain>发布</el-button>
+        <el-button type="primary" size="small" plain @>发布</el-button>
         <el-button type="primary" size="small" plain @click="saveArticle()">保存</el-button>
         <el-button type="primary" size="small" plain>预览</el-button>
         <el-button type="primary" size="small" plain>关闭</el-button>
@@ -27,7 +27,7 @@
             </span>
           </template>
           <el-select
-            v-model="blogObj.tags"
+            v-model="blogObj.tagArr"
             class="tags-select"
             multiple
             filterable
@@ -35,7 +35,7 @@
             default-first-option
             placeholder="请选择文章标签">
             <el-option
-              v-for="item in tagArr"
+              v-for="item in dbTagArr"
               :key="item.id"
               :label="item.tagName"
               :value="item.tagName"/>
@@ -93,6 +93,7 @@
 
 <script>
 import TinymceEditor from '@/components/tinymce-editor'
+import utils from '@/utils/utils'
 import Http from '@/utils/http'
 export default {
   components: {
@@ -100,7 +101,7 @@ export default {
   },
   data () {
     return {
-      tagArr: [],
+      dbTagArr: [],
       blogObj: {
         title: '',
         content: '',
@@ -108,9 +109,11 @@ export default {
         isComment: true,
         timeDateType: '1',
         timeDate: 0,
+        tagArr: [],
         pubilce: false
       },
-      disabled: false
+      disabled: false,
+      id: ''
     }
   },
   watch: {
@@ -119,10 +122,20 @@ export default {
         if (val === '1') this.blogObj.timeDate = new Date().getTime()
       },
       immediate: true
+    },
+    '$route.query': {
+      handler (query) {
+        const { id } = query
+        this.id = id
+      },
+      immediate: true
     }
   },
-  mounted () {
-    this.getTags()
+  async mounted () {
+    const { id } = this
+    await this.getTags()
+    if (id) await this.getArticle(id)
+    utils.copyData([this.blogObj])
   },
   methods: {
     // 鼠标单击的事件
@@ -135,23 +148,46 @@ export default {
     clear () {
       this.$refs.editor.clear()
     },
-    async saveArticle () {
-      const { blogObj } = this
-      const { status } = await Http.articleApi.addAtricle({ ...blogObj })
+    async getArticle (id) {
+      const { status, data } = await Http.articleApi.getAtricleInfo({ id })
       if (status.code === 0) {
-        this.$message.success('保存成功')
+        this.blogObj = data.articleObj
       } else if (status.code === -1) {
         this.$message.error(status.message)
+      }
+    },
+    async saveArticle () {
+      const { blogObj, id } = this
+      if (id) {
+        // 更新文章
+        const patchArr = utils.compareData(this.blogObj)
+        if (patchArr.length === 0) return this.$message.error('未修改内容')
+        const patchObj = {}
+        patchArr.forEach(key => (patchObj[key] = blogObj[key]))
+        const { status } = await Http.articleApi.patchAtricle({ id, ...patchObj })
+        if (status.code === 0) {
+          this.$message.success('保存成功')
+          utils.copyData([this.blogObj])
+        } else if (status.code === -1) {
+          this.$message.error(status.message)
+        }
+      } else {
+        // 新建文章
+        const { status, data } = await Http.articleApi.addAtricle({ ...blogObj })
+        if (status.code === 0) {
+          this.$message.success('保存成功')
+          this.$router.push({ path: 'write-article', query: { id: data.id }})
+          utils.copyData([this.blogObj])
+        } else if (status.code === -1) {
+          this.$message.error(status.message)
+        }
       }
     },
     async getTags () {
       const { status, data } = await Http.articleApi.getTags()
       if (status.code === 0) {
-        this.tagArr = data.tagArr
+        this.dbTagArr = data.tagArr
       }
-    },
-    async createNewTags () {
-
     }
   }
 }
