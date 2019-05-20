@@ -34,6 +34,10 @@ const articleApi = {
     method: 'patch',
     url: '/article/{id}'
   },
+  getArticles: {
+    method: 'get',
+    url: '/articles'
+  },
   getTags: {
     method: 'get',
     url: '/tags'

@@ -59,21 +59,47 @@
           heigth="100"
           width="55" />
         <el-table-column
-          label="文章"
-          width="120"
+          prop="modifyDate"
+          label="修改时间"
+          align="center"
+          width="200"
+          sortable >
+          <template slot-scope="scope">
+            <span style="margin-left: 5px">{{ $moment(scope.row.modifyDate).format('YYYY-MM-DD hh:mm:ss') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="文章标题"
+          align="center"
+          width="200"
           prop="title"
           sortable>
           <!-- <template slot-scope="props"></template> -->
         </el-table-column>
         <el-table-column
           prop="name"
-          label="姓名"
+          label="作者"
           width="120"
           sortable />
         <el-table-column
-          prop="address"
+          prop="public"
+          label="是否发布"
+          width="120"
+          sortable />
+        <el-table-column
+          prop="articleLink"
+          align="center"
+          label="文章地址" />
+        <el-table-column
           label="标签"
-          show-overflow-tooltip />
+          align="center"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-tag v-for="(item, index) in scope.row.tagArr" :key="index" class="article-tag">
+              {{ item }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
@@ -102,6 +128,7 @@
   </div>
 </template>
 <script>
+import Http from '@/utils/http'
 export default {
   name: 'AllArticle',
   data () {
@@ -153,30 +180,28 @@ export default {
       startTime: '',
       endTime: '',
       tableData: [{
-        title: 'a文章',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄',
-        tag: '家'
-      }, {
-        title: 'b文章',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄',
-        tag: '公司'
-      }, {
-        title: 'd文章',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄',
-        tag: '家'
-      }, {
-        title: 'c文章',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄',
-        tag: '公司'
+        title: '标题',
+        name: '作者',
+        articleLink: 'https://www.baidu.com',
+        tagArr: ['ffff', 'asdf'],
+        modifyDate: 1318781876000,
+        public: 1
       }],
       multipleSelection: []
     }
   },
+  mounted () {
+    this.getArticles()
+  },
   methods: {
+    async getArticles () {
+      const { status, data } = await Http.articleApi.getArticles()
+      if (status.code === 0) {
+        const { data: articles, pageObj } = data
+        this.tableData = articles
+        console.info('pageObj', pageObj)
+      }
+    },
     handleClick (row) {
       console.log(row)
     },
@@ -223,6 +248,9 @@ export default {
         width: 150px;
       }
     }
+  }
+  .article-tag{
+    margin: 0 3px;
   }
 }
 </style>

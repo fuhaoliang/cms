@@ -300,25 +300,32 @@ export default {
     }
     return new File([u8arr], filename, { type: mime })
   },
-  copyData (dataArr = []) {
-    this.SELF_DATA_ARR = this.SELF_DATA_ARR || []
+  copyData (dataArr = [{ name: '', value: '' }]) {
+    this.SELF_DATA = this.SELF_DATA || {}
     dataArr.forEach(item => {
-      const itmeSymbol = Symbol()
-      console.info('itmeSymbol', itmeSymbol)
-      item['_symbol'] = itmeSymbol
-      const oldItem = JSON.parse(JSON.stringify(item))
-      this.SELF_DATA_ARR[itmeSymbol] = JSON.parse(JSON.stringify(oldItem))
+      const { name, value } = item
+      const nameOld = `${name}_old`
+      this.SELF_DATA[nameOld] = JSON.parse(JSON.stringify(value))
     })
   },
-  compareData (oldObj = {}) {
+  compareData (oldObj = { name: '', value: '' }, clear = true) {
+    const { name, value } = oldObj
+    const nameOld = `${name}_old`
     const changeArr = []
-    const SELF_DATA_ARR = this.SELF_DATA_ARR
-    for (const key in oldObj) {
-      if (key === '_symbol') continue
-      const oldData = SELF_DATA_ARR[oldObj['_symbol']][key].toString()
-      const newData = oldObj[key].toString()
-      if (oldData !== newData) {
+    const oldData = this.SELF_DATA[nameOld]
+    const newData = value
+    for (const key in oldData) {
+      let isChange = false
+      try {
+        isChange = oldData[key].toString() !== newData[key].toString()
+      } catch (e) {
+        isChange = JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])
+      }
+      if (isChange) {
         changeArr.push(key)
+      }
+      if (clear) {
+        delete this.SELF_DATA[nameOld]
       }
     }
     return changeArr

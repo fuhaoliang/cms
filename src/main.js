@@ -11,6 +11,7 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+import moment from 'moment'
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -29,7 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 // import '../mock' // simulation data
 
 Vue.use(ElementUI, { locale })
-
+Vue.prototype.$moment = moment
 Vue.config.productionTip = false
 
 new Vue({

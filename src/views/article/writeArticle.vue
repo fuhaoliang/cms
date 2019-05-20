@@ -7,10 +7,11 @@
         </el-input>
       </div>
       <div class="writeArite-header-r">
-        <el-button type="primary" size="small" plain @>发布</el-button>
+        <el-button v-if="blogObj.public === 0" type="primary" size="small" plain @click="publicArticle()">发布</el-button>
+        <el-button v-else type="primary" size="small" plain @click="privateArticle()">下架</el-button>
         <el-button type="primary" size="small" plain @click="saveArticle()">保存</el-button>
         <el-button type="primary" size="small" plain>预览</el-button>
-        <el-button type="primary" size="small" plain>关闭</el-button>
+        <el-button type="primary" size="small" plain @click="close()">关闭</el-button>
       </div>
     </div>
     <div class="writeArticle-content">
@@ -110,7 +111,7 @@ export default {
         timeDateType: '1',
         timeDate: 0,
         tagArr: [],
-        pubilce: false
+        public: 0
       },
       disabled: false,
       id: ''
@@ -135,7 +136,10 @@ export default {
     const { id } = this
     await this.getTags()
     if (id) await this.getArticle(id)
-    utils.copyData([this.blogObj])
+    utils.copyData([{
+      name: 'blogObj',
+      value: this.blogObj
+    }])
   },
   methods: {
     // 鼠标单击的事件
@@ -148,6 +152,9 @@ export default {
     clear () {
       this.$refs.editor.clear()
     },
+    close () {
+      this.$router.push('/article/all-article')
+    },
     async getArticle (id) {
       const { status, data } = await Http.articleApi.getAtricleInfo({ id })
       if (status.code === 0) {
@@ -156,18 +163,34 @@ export default {
         this.$message.error(status.message)
       }
     },
-    async saveArticle () {
+    async publicArticle () {
+      this.blogObj.public = 1
+      this.saveArticle('发布成功')
+    },
+    async privateArticle () {
+      this.blogObj.public = 0
+      this.saveArticle('下架成功')
+    },
+    async saveArticle (msg) {
       const { blogObj, id } = this
+      msg = msg || '保存成功'
+      console.info('msg')
       if (id) {
         // 更新文章
-        const patchArr = utils.compareData(this.blogObj)
+        const patchArr = utils.compareData({
+          name: 'blogObj',
+          value: blogObj
+        }, true)
         if (patchArr.length === 0) return this.$message.error('未修改内容')
         const patchObj = {}
         patchArr.forEach(key => (patchObj[key] = blogObj[key]))
         const { status } = await Http.articleApi.patchAtricle({ id, ...patchObj })
         if (status.code === 0) {
-          this.$message.success('保存成功')
-          utils.copyData([this.blogObj])
+          this.$message.success(msg)
+          utils.copyData([{
+            name: 'blogObj',
+            value: blogObj
+          }])
         } else if (status.code === -1) {
           this.$message.error(status.message)
         }
@@ -175,9 +198,12 @@ export default {
         // 新建文章
         const { status, data } = await Http.articleApi.addAtricle({ ...blogObj })
         if (status.code === 0) {
-          this.$message.success('保存成功')
+          this.$message.success(msg)
           this.$router.push({ path: 'write-article', query: { id: data.id }})
-          utils.copyData([this.blogObj])
+          utils.copyData([{
+            name: 'blogObj',
+            value: blogObj
+          }])
         } else if (status.code === -1) {
           this.$message.error(status.message)
         }
