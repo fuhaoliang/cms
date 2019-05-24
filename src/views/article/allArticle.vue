@@ -2,29 +2,26 @@
   <div class="allArticle">
     <div class="header">
       <h2 class="header-title">文章</h2>
-      <el-button type="mini">写文章</el-button>
+      <el-button type="mini"><router-link to="/article/write-article">写文章</router-link></el-button>
     </div>
     <div class="screen-box">
       <div class="screen-header">
-        <p>全部(1)</p>
+        <p>全部({{ allDataInfo.totalCount }})</p>
         <p class="excision">|</p>
-        <p>已发布(1)</p>
+        <p>已发布({{ allDataInfo.puliceCount }})</p>
       </div>
       <div class="screen-content">
         <el-select
-          v-model="value"
+          v-model="queryObj.public"
           class="appSelect"
           placeholder="请选择"
           size="small">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value" />
+          <el-option label="全部" value=""/>
+          <el-option label="草稿" value="0"/>
+          <el-option label="已发布" value="1"/>
         </el-select>
-        <el-button type="small">应用</el-button>
         <el-date-picker
-          v-model="endTime"
+          v-model="queryObj.modifyDate"
           :picker-options="pickerOptions"
           type="daterange"
           align="right"
@@ -32,23 +29,26 @@
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          value-format="timestamp"
           size="small" />
         <el-select
-          v-model="value"
+          v-model="queryObj.tagArr"
+          multiple
           class="appSelect"
-          placeholder="请选择"
+          placeholder="标签"
           size="small">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value" />
+            v-for="item in tagsData"
+            :key="item.tagName"
+            :label="item.tagName"
+            :value="item.tagName" />
         </el-select>
-        <el-button type="small">筛选</el-button>
+        <el-button type="small" @click="getArticles()">筛选</el-button>
       </div>
     </div>
     <div class="content">
       <el-table
+        v-loading="loading"
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
@@ -111,19 +111,32 @@
               @click="handleClick(scope.row)">查看</el-button>
             <el-button
               type="text"
-              size="small">编辑</el-button>
+              size="small"><router-link :to="{path: '/article/write-article', query:{ id: scope.row.id } }">编辑</router-link></el-button>
             <el-button
               type="danger"
               icon="el-icon-delete"
               circle
-              size="mini" />
+              size="mini"
+              @click="open(scope.row.id, 'delete')" />
           </template>
         </el-table-column>
       </el-table>
       <div style="margin-top: 20px">
-        <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
-        <el-button @click="toggleSelection()">取消选择</el-button>
+        <!-- <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
+        <el-button @click="toggleSelection()">取消选择</el-button> -->
       </div>
+      <div class="pagination">
+        <el-pagination
+          :current-page="pageObj.page"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="10"
+          :total="pageObj.total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+
     </div>
   </div>
 </template>
@@ -133,23 +146,8 @@ export default {
   name: 'AllArticle',
   data () {
     return {
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: '选项1',
+      loading: false,
+      tagsData: [],
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -177,30 +175,87 @@ export default {
           }
         }]
       },
-      startTime: '',
-      endTime: '',
-      tableData: [{
-        title: '标题',
-        name: '作者',
-        articleLink: 'https://www.baidu.com',
-        tagArr: ['ffff', 'asdf'],
-        modifyDate: 1318781876000,
-        public: 1
-      }],
+      tableData: [],
+      queryObj: {
+        public: '',
+        tagArr: [],
+        modifyDate: []
+      },
+      pageObj: {
+        page: 1,
+        pagesize: 10,
+        total: 0
+      },
+      allDataInfo: {
+        totalCount: 0,
+        puliceCount: 0
+      },
       multipleSelection: []
+    }
+  },
+  computed: {
+    currentPage () {
+      const { pagesize, total } = this.pageObj
+      return Math.ceil(total / pagesize)
     }
   },
   mounted () {
     this.getArticles()
+    this.getArticlesCount()
   },
   methods: {
+    open (id, type) {
+      const textObj = {
+        title: '此操作将永久删除该文章, 是否继续?',
+        des: '提示',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }
+      this.$confirm(textObj.title, textObj.des, textObj)
+        .then(async () => {
+          await this.delArticle(id)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    async delArticle (id) {
+      const { status } = await Http.articleApi.delArticle({ id }, { loading: true, show: true })
+      if (status.code === 0) {
+        this.$message.success('删除成功')
+        this.getArticles()
+      }
+    },
+    async getArticlesCount () {
+      const { status, data } = await Http.articleApi.getArticlesCount()
+      if (status.code === 0) {
+        const { tagArr, totalCount, puliceCount } = data
+        this.tagsData = tagArr
+        this.allDataInfo = {
+          totalCount,
+          puliceCount
+        }
+      }
+    },
     async getArticles () {
-      const { status, data } = await Http.articleApi.getArticles()
+      const { queryObj, pageObj } = this
+      let { tagArr, modifyDate = [] } = queryObj
+      if (modifyDate === null) modifyDate = []
+      tagArr = JSON.stringify(tagArr)
+      modifyDate = JSON.stringify(modifyDate)
+      this.loading = true
+      const { status, data } = await Http.articleApi.getArticles({ ...queryObj, tagArr, modifyDate, ...pageObj })
       if (status.code === 0) {
         const { data: articles, pageObj } = data
         this.tableData = articles
-        console.info('pageObj', pageObj)
+        this.pageObj = pageObj
       }
+      this.loading = false
     },
     handleClick (row) {
       console.log(row)
@@ -217,6 +272,14 @@ export default {
     handleSelectionChange (val) {
       this.multipleSelection = val
       console.info('val', val)
+    },
+    handleSizeChange (pagesize) {
+      this.pageObj.pagesize = pagesize
+      this.getArticles()
+    },
+    handleCurrentChange (page) {
+      this.pageObj.page = page
+      this.getArticles()
     }
   }
 }
@@ -251,6 +314,12 @@ export default {
   }
   .article-tag{
     margin: 0 3px;
+  }
+  .pagination{
+    /deep/ .el-pagination{
+      width: fit-content;
+      margin: 0 auto;
+    }
   }
 }
 </style>

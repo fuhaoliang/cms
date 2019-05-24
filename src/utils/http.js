@@ -81,16 +81,17 @@ for (const i in services) {
         headers: {},
         withCredentials: withCredentials
       }
+
       if (headers.permission) {
         console.info('权限判断')
       } else {
         config.headers = headers
       }
       if (options.loading) {
-        store.state.loading = true
+        store.dispatch('ToggleLoading', true)
       }
       if (options.show) {
-        store.state.loadingShow = true
+        store.dispatch('ToggleLoadingShow', true)
       }
       const host = ((api.mock || options.mock) && process.env.NODE_ENV === 'development') || options.proxy ? '' : serviceHost
       console.info('host----->', host)
@@ -132,10 +133,10 @@ for (const i in services) {
         response = response.data
       }
       if (options.loading) {
-        store.state.loading = false
+        store.dispatch('ToggleLoading', false)
       }
       if (options.show) {
-        store.state.loadingShow = false
+        store.dispatch('ToggleLoadingShow', false)
       }
       console.info('response', response)
       return response

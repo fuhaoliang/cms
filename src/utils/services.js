@@ -26,6 +26,10 @@ const articleApi = {
     method: 'post',
     url: '/article/create'
   },
+  delArticle: {
+    method: 'delete',
+    url: '/article/delete'
+  },
   getAtricleInfo: {
     method: 'get',
     url: '/article/{id}'
@@ -41,6 +45,10 @@ const articleApi = {
   getTags: {
     method: 'get',
     url: '/tags'
+  },
+  getArticlesCount: {
+    method: 'get',
+    url: '/articles/count'
   }
 }
 

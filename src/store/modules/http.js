@@ -1,4 +1,4 @@
-const app = {
+const http = {
   state: {
     permissions: {}, // 权限信息
     loading: false,
@@ -12,7 +12,14 @@ const app = {
       state.loadingShow = bool
     }
   },
-  actions: {}
+  actions: {
+    ToggleLoading: ({ commit }, bool) => {
+      commit('TOGGLE_LOADING', bool)
+    },
+    ToggleLoadingShow: ({ commit }, bool) => {
+      commit('TOGGLE_LOADINGSHOW', bool)
+    }
+  }
 }
 
-export default app
+export default http

@@ -199,7 +199,7 @@ export default {
         const { status, data } = await Http.articleApi.addAtricle({ ...blogObj })
         if (status.code === 0) {
           this.$message.success(msg)
-          this.$router.push({ path: 'write-article', query: { id: data.id }})
+          this.$router.replace({ path: 'write-article', query: { id: data.id }})
           utils.copyData([{
             name: 'blogObj',
             value: blogObj
