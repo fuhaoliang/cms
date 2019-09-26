@@ -19,6 +19,7 @@ import 'tinymce/plugins/contextmenu'
 import 'tinymce/plugins/wordcount'
 import 'tinymce/plugins/colorpicker'
 import 'tinymce/plugins/textcolor'
+import 'tinymce/plugins/code'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
 
@@ -38,11 +39,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image imagetools media table textcolor wordcount contextmenu'
+      default: 'lists image imagetools media table textcolor wordcount contextmenu code'
     },
     toolbar: {
       type: [String, Array],
-      default: 'undo redo |  formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat'
+      default: 'code | undo redo |  formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat'
     }
   },
   data () {
