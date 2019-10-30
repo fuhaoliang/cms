@@ -1,3 +1,10 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-04-08 10:08:34
+ * @LastEditTime: 2019-10-23 23:46:24
+ * @LastEditors: Please set LastEditors
+ */
 import Vue from 'vue'
 import Router from 'vue-router'
 
@@ -169,7 +176,8 @@ export const constantRouterMap = [
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  mode: 'history', // 后端支持可开
+  base: '/cms/',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
