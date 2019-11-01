@@ -54,7 +54,7 @@ module.exports = {
     index: path.resolve(__dirname, '../cms/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../cms'),
+    assetsRoot: path.resolve(__dirname, '../cms/'),
     assetsSubDirectory: 'static',
 
     /**

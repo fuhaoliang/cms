@@ -23,6 +23,8 @@ import 'tinymce/plugins/code'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
 
+const app = require('../../config/app')
+
 export default {
   components: {
     Editor
@@ -47,12 +49,13 @@ export default {
     }
   },
   data () {
+    const isProd = app.env === 'prod'
     return {
       // 初始化配置
       init: {
-        language_url: '/static/tinymce/langs/zh_CN.js',
+        language_url: isProd ? '/cms/static/tinymce/langs/zh_CN.js' : '/static/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
-        skin_url: '/static/tinymce/skins/lightgray',
+        skin_url: isProd ? '/cms/static/tinymce/skins/lightgray' : '/static/tinymce/skins/lightgray',
         height: 420,
         plugins: this.plugins,
         toolbar: this.toolbar,
