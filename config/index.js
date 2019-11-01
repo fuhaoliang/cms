@@ -15,7 +15,7 @@ module.exports = {
   dev: {
     // Paths
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/cms',
+    assetsPublicPath: '/',
     proxyTable: {},
 
     // Various Dev Server settings

@@ -1,7 +1,7 @@
 module.exports = {
-  env: 'prod',
-  v: 1572450226019, //版本號
+  env: 'alpha',
+  v: 1572601090900, //版本號
   // 用户环境
   user: 'user_alpha',
-  baseApi: 'http://47.101.139.129/cms-server/api/v1',
+  baseApi: 'http://127.0.0.1:3000/api/v1',
 }

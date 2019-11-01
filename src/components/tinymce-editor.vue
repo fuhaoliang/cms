@@ -50,9 +50,9 @@ export default {
     return {
       // 初始化配置
       init: {
-        language_url: '../../static/tinymce/langs/zh_CN.js',
+        language_url: '/static/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
-        skin_url: '../../static/tinymce/skins/lightgray',
+        skin_url: '/static/tinymce/skins/lightgray',
         height: 420,
         plugins: this.plugins,
         toolbar: this.toolbar,
