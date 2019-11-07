@@ -20,8 +20,10 @@ import 'tinymce/plugins/wordcount'
 import 'tinymce/plugins/colorpicker'
 import 'tinymce/plugins/textcolor'
 import 'tinymce/plugins/code'
+import 'tinymce/plugins/codesample'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
+// import 'prism.js'
 const app = require('../../config/app')
 
 export default {
@@ -40,11 +42,11 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'lists image imagetools media table textcolor wordcount contextmenu code'
+      default: 'lists image imagetools media table textcolor wordcount contextmenu code codesample'
     },
     toolbar: {
       type: [String, Array],
-      default: 'code | undo redo |  formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat'
+      default: 'code | undo redo |  formatselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat codesample'
     }
   },
   data () {
@@ -59,11 +61,16 @@ export default {
         height: 420,
         plugins: this.plugins,
         toolbar: this.toolbar,
+        fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px',
+        content_css: [
+          '/static/prism.css',
+          '/static/prism.js'
+        ],
         branding: false,
         menubar: false,
         // automatic_uploads: true,
-        // images_upload_url: 'http://127.0.0.1:3000/api/v1/upload',
-        automatic_uploads: false,
+        images_upload_url: 'http://127.0.0.1:3000/api/v1/upload',
+        // automatic_uploads: false,
         image_title: true,
         image_advtab: true,
         images_reuse_filename: true,
@@ -85,6 +92,13 @@ export default {
           } if (status.code === -1) {
             failure(status.message)
           }
+        },
+        imagetools_fetch_image: function (img) {
+          console.info('img', img)
+          return new tinymce.util.Promise(function (resolve) {
+            // Fetch the image and return a blob containing the image content
+            resolve()
+          })
         }
       },
       myValue: this.value
