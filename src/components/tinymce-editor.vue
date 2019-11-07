@@ -22,7 +22,6 @@ import 'tinymce/plugins/textcolor'
 import 'tinymce/plugins/code'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
-
 const app = require('../../config/app')
 
 export default {
@@ -53,6 +52,7 @@ export default {
     return {
       // 初始化配置
       init: {
+        convert_urls: false, // 路径自动转化为相对路径
         language_url: isProd ? '/cms/static/tinymce/langs/zh_CN.js' : '/static/tinymce/langs/zh_CN.js',
         language: 'zh_CN',
         skin_url: isProd ? '/cms/static/tinymce/skins/lightgray' : '/static/tinymce/skins/lightgray',
@@ -80,6 +80,7 @@ export default {
           fd.append('file', fileData)
           const { status, data } = await Http.userApi.uploadImage(fd)
           if (status.code === 0) {
+            console.info('data.file--->', data.file)
             success(data.file)
           } if (status.code === -1) {
             failure(status.message)
