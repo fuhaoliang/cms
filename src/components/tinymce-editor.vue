@@ -21,9 +21,8 @@ import 'tinymce/plugins/colorpicker'
 import 'tinymce/plugins/textcolor'
 import 'tinymce/plugins/code'
 import 'tinymce/plugins/codesample'
-import utils from '@/utils/utils'
+// import utils from '@/utils/utils'
 import Http from '@/utils/http'
-// import 'prism.js'
 const app = require('../../config/app')
 
 export default {
@@ -78,13 +77,15 @@ export default {
         // 此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
         // 如需ajax上传可参考https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
         images_upload_handler: async (blobInfo, success, failure) => {
+          console.info('blobInfo------->', blobInfo.name(), blobInfo.blob(), blobInfo.filename(), blobInfo)
           // if (blobInfo.filename().indexOf('blobid') > -1) return
-          const imgBase64 = 'data:image/jpeg;base64,' + blobInfo.base64()
-          // success(imgBase64)
-          const imgName = blobInfo.name()
-          const fileData = utils.dataURLtoFile(imgBase64, imgName)
+          // const imgBase64 = 'data:image/jpeg;base64,' + blobInfo.base64()
+          // // success(imgBase64)
+          // const imgName = blobInfo.name()
+          // const fileData = utils.dataURLtoFile(imgBase64, imgName)
           const fd = new FormData()
-          fd.append('file', fileData)
+          fd.append('file', blobInfo.blob(), blobInfo.filename())
+
           const { status, data } = await Http.userApi.uploadImage(fd)
           if (status.code === 0) {
             console.info('data.file--->', data.file)
