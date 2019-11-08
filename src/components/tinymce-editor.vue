@@ -45,7 +45,7 @@ export default {
     },
     toolbar: {
       type: [String, Array],
-      default: 'code | undo redo |  formatselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat codesample'
+      default: 'code | undo redo | formatselect fontsizeselect bold italic forecolor backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | lists image media table | removeformat codesample | lineheightselect'
     }
   },
   data () {
@@ -61,10 +61,14 @@ export default {
         plugins: this.plugins,
         toolbar: this.toolbar,
         fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px',
+        lineheight_formats: '1 1.2 1.25 1.5 2',
         content_css: [
           '/static/prism.css',
           '/static/prism.js'
         ],
+        external_plugins: {
+          lineheight: '/static/tinymce/plugins/lineheight/plugin.min.js'
+        },
         branding: false,
         menubar: false,
         // automatic_uploads: true,
