@@ -1,8 +1,11 @@
 <template>
   <div class="tinymce-editor">
-    <editor v-model="myValue"
-            :init="init"
-            :disabled="disabled"/>
+    <editor
+      v-model="myValue"
+      :init="init"
+      :disabled="disabled"
+      class="my-tinymce"
+    />
   </div>
 </template>
 
@@ -134,6 +137,14 @@ export default {
 }
 
 </script>
-<style scoped>
+<style scoped lang="scss">
+#tinymce{
+  /deep/ p{
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-top: 100px;
+  }
+}
+
 </style>
 
