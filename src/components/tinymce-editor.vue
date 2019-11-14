@@ -64,7 +64,7 @@ export default {
         plugins: this.plugins,
         toolbar: this.toolbar,
         fontsize_formats: '11px 12px 14px 16px 18px 24px 36px 48px',
-        lineheight_formats: '1 1.2 1.25 1.5 2',
+        lineheight_formats: '1 1.2 1.25 1.5 1.75 2',
         content_css: [
           '/static/prism.css',
           '/static/prism.js'
