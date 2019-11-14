@@ -1,4 +1,13 @@
+/*
+ * @Author: your name
+ * @Date: 2019-10-23 23:20:00
+ * @LastEditTime: 2019-11-14 23:21:17
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /cms/src/main.js
+ */
 import Vue from 'vue'
+import Vuelidate from 'vuelidate'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
@@ -30,6 +39,8 @@ if (process.env.NODE_ENV === 'development') {
 // import '../mock' // simulation data
 
 Vue.use(ElementUI, { locale })
+Vue.use(Vuelidate)
+
 Vue.prototype.$moment = moment
 Vue.config.productionTip = false
 

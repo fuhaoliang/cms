@@ -2,7 +2,7 @@
   <el-form ref="writeArticle" :model="blogObj" class="dashboard-container">
     <div class="writeArite-header">
       <div class="writeArite-header-l" >
-        <el-input v-model="blogObj.title" placeholder="请输入" size="medium">
+        <el-input v-model.trim="$v.blogObj.title.$model" :class="{ 'is-error': $v.blogObj.title.$error }" placeholder="请输入" size="medium">
           <template slot="prepend">博客标题:</template>
         </el-input>
       </div>
@@ -24,11 +24,12 @@
         <el-collapse-item>
           <template slot="title">
             <span class="svg-container">
-              <svg-icon icon-class="biaoqian" />标签
+              <svg-icon :class="{ 'is-error': $v.blogObj.tagArr.$error }" icon-class="biaoqian"/>标签
             </span>
           </template>
           <el-select
-            v-model="blogObj.tagArr"
+            v-model="$v.blogObj.tagArr.$model"
+            :class="{ 'is-error': $v.blogObj.tagArr.$error }"
             class="tags-select"
             multiple
             filterable
@@ -96,6 +97,7 @@
 import TinymceEditor from '@/components/tinymce-editor'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
+import { required } from 'vuelidate/lib/validators'
 export default {
   components: {
     TinymceEditor
@@ -115,6 +117,16 @@ export default {
       },
       disabled: false,
       id: ''
+    }
+  },
+  validations: {
+    blogObj: {
+      title: {
+        required
+      },
+      tagArr: {
+        required
+      }
     }
   },
   watch: {
@@ -172,6 +184,8 @@ export default {
       this.saveArticle('下架成功')
     },
     async saveArticle (msg) {
+      if (!this.$v.$touch()) return this.$message.error('请检查填写格式')
+
       const { blogObj, id } = this
       msg = msg || '保存成功'
       console.info('msg')
@@ -219,7 +233,18 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style  lang="scss" >
+
+.is-error{
+  .el-input__inner{
+    color: #f56c6c;
+    border-color: #f56c6c;
+    &::placeholder{
+      color: #f56c6c;
+    }
+  }
+}
+
 .dashboard {
   &-container {
     padding: 30px;
