@@ -2,9 +2,10 @@
   <el-form ref="writeArticle" :model="blogObj" class="dashboard-container">
     <div class="writeArite-header">
       <div class="writeArite-header-l" >
-        <el-input v-model.trim="$v.blogObj.title.$model" :class="{ 'is-error': $v.blogObj.title.$error }" placeholder="请输入" size="medium">
+        <el-input v-model.trim="$v.blogObj.title.$model" :class="{ 'is-error': $v.blogObj.title.$error }" class="mb20" placeholder="请输入" size="medium">
           <template slot="prepend">博客标题:</template>
         </el-input>
+        <el-input type="textarea" placeholder="请输入概要内容" v-model="blogObj.summary"></el-input>
       </div>
       <div class="writeArite-header-r">
         <el-button v-if="blogObj.public === 0" type="primary" size="small" plain @click="publicArticle()">发布</el-button>
@@ -15,11 +16,13 @@
       </div>
     </div>
     <div class="writeArticle-content">
-      <tinymce-editor ref="editor"
-                      v-model="blogObj.content"
-                      :disabled="disabled"
-                      class="editor"
-                      @onClick="onClick" />
+      <tinymce-editor 
+        ref="editor"
+        v-model="blogObj.content"
+        :disabled="disabled"
+        class="editor"
+        @onClick="onClick" 
+      />
       <el-collapse accordion class="article-set">
         <el-collapse-item>
           <template slot="title">
@@ -107,6 +110,7 @@ export default {
       dbTagArr: [],
       blogObj: {
         title: '',
+        summary: '',
         content: '',
         articleLink: '',
         isComment: true,
@@ -147,11 +151,15 @@ export default {
   async mounted () {
     const { id } = this
     await this.getTags()
-    if (id) await this.getArticle(id)
-    utils.copyData([{
-      name: 'blogObj',
-      value: this.blogObj
-    }])
+    if (id) {
+      console.info('111111111')
+      await this.getArticle(id)
+      console.info('333333333', this.blogObj)
+      utils.copyData([{
+        name: 'blogObj',
+        value: this.blogObj
+      }])
+    }
   },
   methods: {
     // 鼠标单击的事件
@@ -174,6 +182,7 @@ export default {
       } else if (status.code === -1) {
         this.$message.error(status.message)
       }
+       console.info('2222222')
     },
     async publicArticle () {
       this.blogObj.public = 1
@@ -184,7 +193,7 @@ export default {
       this.saveArticle('下架成功')
     },
     async saveArticle (msg) {
-      if (!this.$v.$touch()) return this.$message.error('请检查填写格式')
+      if (this.$v.$error) return this.$message.error('请检查填写格式')
 
       const { blogObj, id } = this
       msg = msg || '保存成功'
@@ -194,7 +203,8 @@ export default {
         const patchArr = utils.compareData({
           name: 'blogObj',
           value: blogObj
-        }, true)
+        }, false)
+        console.info('patchArr--->', patchArr)
         if (patchArr.length === 0) return this.$message.error('未修改内容')
         const patchObj = {}
         patchArr.forEach(key => (patchObj[key] = blogObj[key]))
@@ -235,6 +245,10 @@ export default {
 
 <style  lang="scss" >
 
+.mb20{
+  margin-bottom: 20px;
+}
+
 .is-error{
   .el-input__inner{
     color: #f56c6c;
@@ -266,6 +280,7 @@ export default {
     .writeArite-header-l{
       flex: 1;
       display: flex;
+      flex-direction: column;
       align-items: center;
       p{
         width: 100px;

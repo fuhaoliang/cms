@@ -94,7 +94,7 @@ for (const i in services) {
         store.dispatch('ToggleLoadingShow', true)
       }
       const host = ((api.mock || options.mock) && process.env.NODE_ENV === 'development') || options.proxy ? '' : serviceHost
-      console.info('host----->', host)
+      // console.info('host----->', host)
       let response = {}
       if (api.method === 'put' || api.method === 'post' || api.method === 'patch') {
         response = await jrAxios[api.method](host + apiUrl, data, config)
@@ -108,8 +108,6 @@ for (const i in services) {
           message: 'Error: Network Error'
         }
       }
-      console.info('response', response)
-      console.info('response.response', response.response)
       if (response.response) {
         errorObj.status.code = response.response.status
         errorObj.status.message = response.response.status + ' ' + (response.response.statusText ? response.response.statusText : tipMsg[response.response.status])
@@ -122,7 +120,6 @@ for (const i in services) {
         response = response.response
       }
       if (response.status === 200 || response.status === 201) {
-        console.info('sucess---http')
       } else {
         response.data = errorObj
         if (options.error) {
@@ -138,7 +135,6 @@ for (const i in services) {
       if (options.show) {
         store.dispatch('ToggleLoadingShow', false)
       }
-      console.info('response', response)
       return response
     }
   }

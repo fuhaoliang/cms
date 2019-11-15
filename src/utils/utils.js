@@ -301,19 +301,22 @@ export default {
     return new File([u8arr], filename, { type: mime })
   },
   copyData (dataArr = [{ name: '', value: '' }]) {
-    this.SELF_DATA = this.SELF_DATA || {}
+    window.SELF_DATA = window.SELF_DATA || {}
     dataArr.forEach(item => {
       const { name, value } = item
       const nameOld = `${name}_old`
-      this.SELF_DATA[nameOld] = JSON.parse(JSON.stringify(value))
+      window.SELF_DATA[nameOld] = JSON.parse(JSON.stringify(value))
     })
+    console.info('window.SELF_DATA', window.SELF_DATA)
   },
   compareData (oldObj = { name: '', value: '' }, clear = true) {
     const { name, value } = oldObj
     const nameOld = `${name}_old`
     const changeArr = []
-    const oldData = this.SELF_DATA[nameOld]
+    const oldData = window.SELF_DATA[nameOld]
     const newData = value
+    console.info('window.SELF_DATA[nameOld]',window.SELF_DATA[nameOld])
+    console.info('newData', newData)
     for (const key in oldData) {
       let isChange = false
       try {
@@ -325,7 +328,7 @@ export default {
         changeArr.push(key)
       }
       if (clear) {
-        delete this.SELF_DATA[nameOld]
+        delete window.SELF_DATA[nameOld]
       }
     }
     return changeArr
