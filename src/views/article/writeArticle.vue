@@ -5,7 +5,7 @@
         <el-input v-model.trim="$v.blogObj.title.$model" :class="{ 'is-error': $v.blogObj.title.$error }" class="mb20" placeholder="请输入" size="medium">
           <template slot="prepend">博客标题:</template>
         </el-input>
-        <el-input type="textarea" placeholder="请输入概要内容" v-model="blogObj.summary"></el-input>
+        <el-input v-model="blogObj.summary" type="textarea" placeholder="请输入概要内容"/>
       </div>
       <div class="writeArite-header-r">
         <el-button v-if="blogObj.public === 0" type="primary" size="small" plain @click="publicArticle()">发布</el-button>
@@ -16,12 +16,12 @@
       </div>
     </div>
     <div class="writeArticle-content">
-      <tinymce-editor 
+      <tinymce-editor
         ref="editor"
         v-model="blogObj.content"
         :disabled="disabled"
         class="editor"
-        @onClick="onClick" 
+        @onClick="onClick"
       />
       <el-collapse accordion class="article-set">
         <el-collapse-item>
@@ -86,8 +86,11 @@
               active-text="允许"
               inactive-text="不允许"/>
           </div>
-
         </el-collapse-item>
+        <div class="upload-item">
+          <Upload :cover-url.sync="blogObj.coverUrl" />
+          <p>封面上传</p>
+        </div>
       </el-collapse>
     <!-- <button @click="clear">清空内容</button>
     <button @click="disabled = !disabled">禁用</button>
@@ -98,17 +101,20 @@
 
 <script>
 import TinymceEditor from '@/components/tinymce-editor'
+import Upload from '@/components/Upload'
 import utils from '@/utils/utils'
 import Http from '@/utils/http'
 import { required } from 'vuelidate/lib/validators'
 export default {
   components: {
-    TinymceEditor
+    TinymceEditor,
+    Upload
   },
   data () {
     return {
       dbTagArr: [],
       blogObj: {
+        coverUrl: '',
         title: '',
         summary: '',
         content: '',
@@ -152,9 +158,7 @@ export default {
     const { id } = this
     await this.getTags()
     if (id) {
-      console.info('111111111')
       await this.getArticle(id)
-      console.info('333333333', this.blogObj)
       utils.copyData([{
         name: 'blogObj',
         value: this.blogObj
@@ -182,7 +186,7 @@ export default {
       } else if (status.code === -1) {
         this.$message.error(status.message)
       }
-       console.info('2222222')
+      console.info('2222222')
     },
     async publicArticle () {
       this.blogObj.public = 1
@@ -345,6 +349,13 @@ export default {
     display: flex;
     align-items: center;
     font-size: 14px;
+  }
+  .upload-item{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

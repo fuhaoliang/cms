@@ -315,7 +315,7 @@ export default {
     const changeArr = []
     const oldData = window.SELF_DATA[nameOld]
     const newData = value
-    console.info('window.SELF_DATA[nameOld]',window.SELF_DATA[nameOld])
+    console.info('window.SELF_DATA[nameOld]', window.SELF_DATA[nameOld])
     console.info('newData', newData)
     for (const key in oldData) {
       let isChange = false

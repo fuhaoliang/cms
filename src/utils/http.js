@@ -120,6 +120,7 @@ for (const i in services) {
         response = response.response
       }
       if (response.status === 200 || response.status === 201) {
+        console.info('成功')
       } else {
         response.data = errorObj
         if (options.error) {
