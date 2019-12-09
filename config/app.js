@@ -1,7 +1,15 @@
+/*
+ * @Author: your name
+ * @Date: 2019-11-06 22:05:36
+ * @LastEditTime: 2019-12-09 23:55:03
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /cms/config/app.pro.js
+ */
 module.exports = {
-  env: 'alpha',
-  v: 1574171435438, //版本號
+  env: 'prod',
+  v: 1575906939728, //版本號
   // 用户环境
-  user: 'user_alpha',
-  baseApi: 'http://127.0.0.1:3000/api/v1',
+  user: 'user_pro',
+  baseApi: 'http://www.fuhaoliang.com/cms-server/api/v1',
 }
