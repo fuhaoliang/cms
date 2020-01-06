@@ -68,6 +68,9 @@ export default {
         this.$message.error(status.msg)
       }
       return isJPG && isLt2M
+    },
+    handleAvatarSuccess () {
+      console.info('上次成功')
     }
   }
 }
